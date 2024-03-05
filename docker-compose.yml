@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=postgrespw
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  productsapi:
+    build:
+      context: ./ProductsInventoryApi/
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Compose
+      - ASPNETCORE_URLS=http://+:80
+    depends_on:
+      - postgres
+
+  client:
+    build:
+      context: ./product-inventory-client/
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - productsapi
+
+volumes: 
+  pgdata:
